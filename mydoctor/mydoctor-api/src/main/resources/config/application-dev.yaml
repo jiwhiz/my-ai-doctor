@@ -1,0 +1,69 @@
+logging:
+  level:
+    ROOT: INFO
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+      springframework:
+        security: TRACE
+    com:
+      jiwhiz: DEBUG
+
+
+
+spring:
+  application:
+    version: local-snapshot
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:postgresql://localhost:5432/mydoctordemo
+    username: walle
+    password: walle
+    hikari:
+      poolName: Hikari
+      auto-commit: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://auth.mydoctor:8080/realms/mydoctor-demo
+          jwk-set-uri: http://auth.mydoctor:8080/realms/mydoctor-demo/protocol/openid-connect/certs
+
+server:
+  port: 8081
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    tagsSorter: alpha
+    operationsSorter: alpha
+
+app:
+  security:
+    oauth2:
+      audience:
+        - mydoctor-ui
+  cors:
+    # Allow local angular web server
+    allowed-origins:
+      - 'http://ui.mydoctor:4200'
+      - 'http://localhost:4200'
+    # Enable CORS when running in GitHub Codespaces
+    allowed-origin-patterns: 'https://*.githubpreview.dev'
+    allowed-methods: '*'
+    allowed-headers: '*'
+    exposed-headers: 'Authorization,Link,X-Total-Count,X-${spring.application.name}-alert,X-${spring.application.name}-error,X-${spring.application.name}-params'
+    allow-credentials: true
+    max-age: 1800
+
