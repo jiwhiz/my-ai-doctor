@@ -1,10 +1,28 @@
 import Keycloak from 'keycloak-js';
+import { Client } from '@stomp/stompjs';
 
 var keycloak = new Keycloak({
     url: 'http://auth.mydoctor:8080',
     realm: 'mydoctor-demo',
     clientId: 'mydoctor-ui',
 });
+
+var stompClient = new Client({
+    brokerURL: 'ws://api.mydoctor:8081/ws',
+
+    debug: function (str) {
+        console.log('Stomp:' + str);
+    },
+
+    reconnectDelay: 5000,
+    heartbeatIncoming: 4000,
+    heartbeatOutgoing: 4000,
+    onStompError: function (frame) {
+        console.log('Broker reported error: ' + frame.headers['message']);
+        console.log('Additional details: ' + frame.body);
+    }
+})
+
 
 
 // This is called BEFORE your Elm app starts up
@@ -34,6 +52,26 @@ export const onReady = ({ app, env }) => {
         if (keycloak.authenticated) {
             console.log("Authenticated. Send the access token back to Elm");
             app.ports.onLoginSuccess.send(keycloak.token);
+            localStorage.setItem('token', keycloak.token);
+
+            stompClient.connectHeaders = {
+                Authorization: 'Bearer ' + keycloak.token
+            };
+
+            stompClient.onConnect = (frame) => {
+                console.log('call onConnect()');
+                stompClient.subscribe('/user/queue',
+                    (message) => {
+                        console.log('got message: ' + message);
+                        if (message && message.body) {
+                        const payload = JSON.parse(message.body);
+                        console.log(payload);
+                        app.ports.messageReceiver.send(payload.content);
+                        }
+                    }
+                )
+            }
+            stompClient.activate();
         }
     });
 
@@ -65,6 +103,16 @@ export const onReady = ({ app, env }) => {
                 console.error('Failed to logout Keycloak');
                 console.error(err);
             });
+        })
+    }
+
+    if (app.ports && app.ports.sendMessage) {
+        app.ports.sendMessage.subscribe( function (message) {
+            const payload = {content: message};
+            stompClient.publish({
+                destination: '/app/chat',
+                body: JSON.stringify(payload)
+              })
         })
     }
 }

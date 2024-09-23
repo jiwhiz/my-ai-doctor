@@ -25,7 +25,6 @@ public class MessageController {
         var response = chatClientBuilder.build()
                 .prompt()
                 .user(message.content())
-                .functions("portfolioFunction") // reference by bean name.
                 .call()
                 .content();
         log.info("Message response: {}", response);

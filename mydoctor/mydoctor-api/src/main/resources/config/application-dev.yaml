@@ -14,7 +14,6 @@ logging:
       jiwhiz: DEBUG
 
 
-
 spring:
   application:
     version: local-snapshot
@@ -49,6 +48,7 @@ springdoc:
     tagsSorter: alpha
     operationsSorter: alpha
 
+
 app:
   security:
     oauth2:
@@ -57,8 +57,7 @@ app:
   cors:
     # Allow local angular web server
     allowed-origins:
-      - 'http://ui.mydoctor:4200'
-      - 'http://localhost:4200'
+      - 'http://ui.mydoctor:1234'
     # Enable CORS when running in GitHub Codespaces
     allowed-origin-patterns: 'https://*.githubpreview.dev'
     allowed-methods: '*'

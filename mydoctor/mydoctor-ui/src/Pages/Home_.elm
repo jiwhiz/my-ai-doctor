@@ -1,10 +1,12 @@
 module Pages.Home_ exposing (Model, Msg, page)
 
-import Effect exposing (Effect, onLoginSuccess)
-import Html exposing (Html, br, button, div, text)
-import Html.Events exposing (onClick)
+import Effect exposing (Effect, onLoginSuccess, messageReceiver)
+import Html exposing (br, button, div, text, p, input)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick, onInput)
 import Http
 import Page exposing (Page)
+import Platform.Sub exposing (batch)
 import Route exposing (Route)
 import Shared
 import View exposing (View)
@@ -23,12 +25,19 @@ type alias Model =
     { isLoggedIn : Bool
     , accessToken : Maybe String
     , apiResponse : Maybe String
+    , messages : List String
+    , newMessage : String
     }
 
 
 init : () -> ( Model, Effect Msg )
 init _ =
-    ( { isLoggedIn = False, accessToken = Nothing, apiResponse = Nothing }
+    ( { isLoggedIn = False
+      , accessToken = Nothing
+      , apiResponse = Nothing
+      , messages = []
+      , newMessage = ""
+      }
     , Effect.none
     )
 
@@ -41,6 +50,9 @@ type Msg
     | CallApi
     | ReceiveApiResponse (Result Http.Error String)
     | Logout
+    | UserInputChange String
+    | SendMessage
+    | ReceiveWSMessage String
 
 
 update : Msg -> Model -> ( Model, Effect Msg )
@@ -89,14 +101,30 @@ update msg model =
                 Err error ->
                     ( { model | apiResponse = Just ("Error: " ++ Debug.toString error) }, Effect.none )
 
+        ReceiveWSMessage message ->
+            ( { model | messages = model.messages ++ [message] }
+            , Effect.none
+            )
 
+        UserInputChange message ->
+            ( { model | newMessage = message }
+            , Effect.none
+            )
+
+        SendMessage ->
+            ( { model | messages = model.messages ++ [model.newMessage], newMessage = "" }
+            , Effect.sendMessageToBackend model.newMessage
+            )
 
 -- Subscriptions
 
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    onLoginSuccess LoginSuccess
+    batch
+        [ onLoginSuccess LoginSuccess
+        , messageReceiver ReceiveWSMessage
+        ]
 
 
 
@@ -120,5 +148,25 @@ view model =
 
             Nothing ->
                 text ""
+
+        , if model.isLoggedIn then 
+            div [class "chat-container"]
+                [ div [ class "chat-box"]
+                    [ div [ class "card" ]
+                        [ div [ class "card-header" ] [ text "Messages" ]
+                        , div [ class "card-body" ] 
+                            [ div [ class "messages"]
+                                [ div [] (List.map (\m -> p [] [ text m ]) model.messages)] 
+                            , br [] []
+                            ]
+                        , div [ class "card-footer" ]
+                            [ input [ placeholder "Your message", value model.newMessage, onInput UserInputChange ] []
+                            , button [ onClick SendMessage ] [ text "Send" ]
+                            ]
+                        ]
+                    ]
+                ]
+          else
+            div [] []
         ]
     }

@@ -7,6 +7,7 @@ port module Effect exposing
     , loadExternalUrl, back
     , map, toCmd
     , loginWithKeycloak, logoutFromKeycloak, onLoginSuccess
+    , messageReceiver, sendMessageToBackend
     )
 
 {-|
@@ -49,6 +50,8 @@ type Effect msg
       -- Keycloak port
     | LoginWithKeycloak
     | LogoutFromKeycloak
+      -- WebSocket port
+    | SendMessageToBackend String
 
 
 -- Define Ports
@@ -62,6 +65,10 @@ port onLoginSuccess : (String -> msg) -> Sub msg
 
 port logout : () -> Cmd msg
 
+port sendMessage : String -> Cmd msg
+
+port messageReceiver : (String -> msg) -> Sub msg
+
 
 loginWithKeycloak : Effect msg
 loginWithKeycloak =
@@ -71,6 +78,11 @@ loginWithKeycloak =
 logoutFromKeycloak : Effect msg
 logoutFromKeycloak =
     LogoutFromKeycloak
+
+
+sendMessageToBackend : String -> Effect msg
+sendMessageToBackend m =
+    SendMessageToBackend m
 
 
 -- BASICS
@@ -203,6 +215,9 @@ map fn effect =
         LogoutFromKeycloak ->
             LogoutFromKeycloak
 
+        SendMessageToBackend m ->
+            SendMessageToBackend m
+
 
 {-| Elm Land depends on this function to perform your effects.
 -}
@@ -248,3 +263,6 @@ toCmd options effect =
 
         LogoutFromKeycloak ->
             logout ()
+
+        SendMessageToBackend m ->
+            sendMessage m
