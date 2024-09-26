@@ -2,28 +2,22 @@ logging:
   level:
     ROOT: INFO
     org:
-      hibernate:
-        SQL: DEBUG
-        type:
-          descriptor:
-            sql:
-              BasicBinder: TRACE
       springframework:
-        security: TRACE
+        security: DEBUG
     com:
       jiwhiz: DEBUG
 
 
 spring:
   application:
-    version: local-snapshot
+    version: 0.0.1-SNAPSHOT
   jpa:
     properties:
       hibernate:
         format_sql: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:5432/mydoctordemo
+    url: jdbc:postgresql://db.postgresql:5432/mydoctordemo
     username: walle
     password: walle
     hikari:
@@ -33,24 +27,11 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://auth.mydoctor:8080/realms/mydoctor-demo
-          jwk-set-uri: http://auth.mydoctor:8080/realms/mydoctor-demo/protocol/openid-connect/certs
-  ai:
-    ollama:
-      base-url: http://localhost:11434/
-      embedding:
-        enabled: true
-        options:
-          mode: mistral
-    vectorstore:
-      weaviate:
-        host: localhost:8050
-        api-key: ""
-        scheme: http
-
+          issuer-uri: http://auth.mydoctor/realms/mydoctor-demo
+          jwk-set-uri: http://auth.mydoctor/realms/mydoctor-demo/protocol/openid-connect/certs
 
 server:
-  port: 8081
+  port: 80
 
 springdoc:
   api-docs:
@@ -67,10 +48,11 @@ app:
     oauth2:
       audience:
         - mydoctor-ui
+
   cors:
-    # Allow local angular web server
+    # Allow local web server
     allowed-origins:
-      - 'http://ui.mydoctor:1234'
+      - 'http://ui.mydoctor'
     # Enable CORS when running in GitHub Codespaces
     allowed-origin-patterns: 'https://*.githubpreview.dev'
     allowed-methods: '*'

@@ -1,4 +1,55 @@
 services:
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - 11435:11434
+    environment:
+      - MODEL_NAME=mistral
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    volumes:
+      - ./docker-setup/ollama:/root/.ollama
+
+
+  weaviate:
+    command:
+      - --host
+      - 0.0.0.0
+      - --port
+      - '8080'
+      - --scheme
+      - http
+    image: cr.weaviate.io/semitechnologies/weaviate:1.26.4
+    ports:
+      - 8050:8080
+      - 50051:50051
+    volumes:
+      - ./docker-setup/weaviate:/var/lib/weaviate
+    restart: on-failure:0
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      DEFAULT_VECTORIZER_MODULE: 'none'
+      ENABLE_API_BASED_MODULES: 'true'
+      CLUSTER_HOSTNAME: 'node1'
+
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgresql_db_local_dev
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./docker-setup/db/init/:/docker-entrypoint-initdb.d/
+
   mydoctor-keycloak:
     image: quay.io/keycloak/keycloak:25.0.5
     container_name: auth.mydoctor
