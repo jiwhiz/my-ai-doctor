@@ -5,11 +5,14 @@ import Html exposing (br, button, div, text, p, input)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
+import Markdown.Option exposing (..)
+import Markdown.Render exposing (MarkdownMsg(..), MarkdownOutput(..))
 import Page exposing (Page)
 import Platform.Sub exposing (batch)
 import Route exposing (Route)
 import Shared
 import View exposing (View)
+import Markdown.Render
 
 
 page : Shared.Model -> Route () -> Page Model Msg
@@ -53,6 +56,7 @@ type Msg
     | UserInputChange String
     | SendMessage
     | ReceiveWSMessage String
+    | MarkdownMsg Markdown.Render.MarkdownMsg
 
 
 update : Msg -> Model -> ( Model, Effect Msg )
@@ -116,6 +120,9 @@ update msg model =
             , Effect.sendMessageToBackend model.newMessage
             )
 
+        MarkdownMsg _ ->
+            ( model, Effect.none )
+
 -- Subscriptions
 
 
@@ -156,7 +163,7 @@ view model =
                         [ div [ class "card-header" ] [ text "Messages" ]
                         , div [ class "card-body" ] 
                             [ div [ class "messages"]
-                                [ div [] (List.map (\m -> p [] [ text m ]) model.messages)] 
+                                [ div [] (List.map (\m -> p [] [ Markdown.Render.toHtml Standard m |> Html.map MarkdownMsg ]) model.messages)] 
                             , br [] []
                             ]
                         , div [ class "card-footer" ]
