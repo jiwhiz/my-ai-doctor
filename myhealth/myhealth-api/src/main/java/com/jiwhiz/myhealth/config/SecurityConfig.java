@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.jiwhiz.myhealth.common.ApplicationProperties;
+import com.jiwhiz.myhealth.common.Constants;
 import com.jiwhiz.myhealth.security.KeycloakJwtAuthenticationConverter;
 
 @Configuration
@@ -42,13 +43,12 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/api-docs/**").permitAll()
-                .requestMatchers("/ws/**").permitAll()
+                .requestMatchers(Constants.API_ENDPOINT_BASE + "/health-records").hasAuthority("ROLE_view_health_record")
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
                 .jwt( jwt -> jwt.jwtAuthenticationConverter(keycloakJwtAuthenticationConverter) )
             )
-            //.oauth2Client(Customizer.withDefaults());
             ;
         // @formatter:on
         return http.build();

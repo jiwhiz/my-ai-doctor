@@ -34,7 +34,7 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://auth.myhealth:8090/realms/myhealth-demo
-          jwk-set-uri: http://auth.mydoctor:8090/realms/myhealth-demo/protocol/openid-connect/certs
+          jwk-set-uri: http://auth.myhealth:8090/realms/myhealth-demo/protocol/openid-connect/certs
 
 server:
   port: 8082
@@ -57,7 +57,7 @@ app:
   cors:
     # Allow local angular web server
     allowed-origins:
-      - 'http://ui.myhealth:1234'
+      - 'http://ui.myhealth:1233'
     # Enable CORS when running in GitHub Codespaces
     allowed-origin-patterns: 'https://*.githubpreview.dev'
     allowed-methods: '*'

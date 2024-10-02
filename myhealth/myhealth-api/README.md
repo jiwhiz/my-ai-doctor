@@ -1,5 +1,5 @@
-# mydoctor-api server
-MyDoctor backend API server for demo purpose.
+# myhealth-api server
+MyHealth backend API server for demo purpose.
 
 ## Test locally
 
@@ -14,5 +14,5 @@ MyDoctor backend API server for demo purpose.
 ./gradlew bootRun --args='--spring.profiles.active=dev'
 ```
 
-Then you can open Swagger UI at http://localhost:8081/swagger-ui/index.html
+Then you can open Swagger UI at http://localhost:8082/swagger-ui/index.html
 
