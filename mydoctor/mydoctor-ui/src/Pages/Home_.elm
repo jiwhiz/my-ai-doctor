@@ -71,10 +71,6 @@ update msg model =
             )
 
         LoginSuccess token ->
-            let
-                _ =
-                    Debug.log "LoginSuccess" token
-            in
             ( { model | isLoggedIn = True, accessToken = Just token }, Effect.none )
 
         CallApi ->
@@ -103,7 +99,7 @@ update msg model =
                     ( { model | apiResponse = Just response }, Effect.none )
 
                 Err error ->
-                    ( { model | apiResponse = Just ("Error: " ++ Debug.toString error) }, Effect.none )
+                    ( { model | apiResponse = Just ("Error: " ++ httpErrorToString error) }, Effect.none )
 
         ReceiveWSMessage message ->
             ( { model | messages = model.messages ++ [message] }
@@ -122,6 +118,25 @@ update msg model =
 
         MarkdownMsg _ ->
             ( model, Effect.none )
+
+httpErrorToString : Http.Error -> String
+httpErrorToString error =
+    case error of
+        Http.BadUrl url ->
+            "Bad URL: " ++ url
+
+        Http.Timeout ->
+            "Request timed out"
+
+        Http.NetworkError ->
+            "Network error occurred"
+
+        Http.BadStatus statusCode ->
+            "Bad response: " ++ String.fromInt statusCode
+
+        Http.BadBody message ->
+            "Bad body: " ++ message
+
 
 -- Subscriptions
 

@@ -1,6 +1,21 @@
 {
+  "name": "mydoctor-ui",
+  "version": "1.0.0",
+  "description": "Demo SPA for MyDoctor UI",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "HOST=ui.mydoctor AUTH_SERVER_URL=http://auth.mydoctor:8080 WS_BASE_URL=http://apip.mydoctor:8081 elm-land server",
+    "build": "elm-land generate && elm-land build"
+  },
+  "devDependencies": {
+    "elm-land": "^0.20.1"
+  },
   "dependencies": {
     "@stomp/stompjs": "^7.0.0",
-    "keycloak-js": "^25.0.5"
+    "keycloak-js": "^25.0.6"
+  },
+  "overrides": {
+    "elm": "npm:@lydell/elm"
   }
 }
