@@ -1,10 +1,10 @@
 import Keycloak from 'keycloak-js';
 
-var keycloak = new Keycloak({
-    url: 'http://auth.myhealth:8090',
-    realm: 'myhealth-demo',
-    clientId: 'myhealth-ui',
-});
+// var keycloak = new Keycloak({
+//     url: 'http://auth.myhealth:8090',
+//     realm: 'myhealth-demo',
+//     clientId: 'myhealth-ui',
+// });
 
 
 // This is called BEFORE your Elm app starts up
@@ -12,6 +12,9 @@ var keycloak = new Keycloak({
 // The value returned here will be passed as flags 
 // into your `Shared.init` function.
 export const flags = ({ env }) => {
+    return {
+        apiBaseUrl : env.API_BASE_URL
+    }
 }
 
 // This is called AFTER your Elm app starts up
@@ -21,6 +24,13 @@ export const flags = ({ env }) => {
 // messages from Elm
 export const onReady = ({ app, env }) => {
     console.log("onReady");
+    console.log(env);
+
+    var keycloak = new Keycloak({
+        url: env.AUTH_SERVER_URL,
+        realm: 'myhealth-demo',
+        clientId: 'myhealth-ui',
+    });
 
     // Initialize Keycloak
     keycloak

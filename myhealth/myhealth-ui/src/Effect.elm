@@ -245,7 +245,7 @@ toCmd options effect =
                 |> Task.perform options.fromSharedMsg
 
         LoginWithKeycloak ->
-            Debug.log "LoginWithKeycloak" <| login ()
+            login ()
 
         LogoutFromKeycloak ->
             logout ()

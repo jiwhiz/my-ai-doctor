@@ -5,7 +5,7 @@
 
 ```bash
 # Requires Node.js v18+ (https://nodejs.org)
-HOST=ui.mydoctor POET=1233 elm-land server
+npm run start
 ```
 
 ## Deploying to production
