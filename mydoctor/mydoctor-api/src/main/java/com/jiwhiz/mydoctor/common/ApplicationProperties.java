@@ -12,9 +12,17 @@ import java.util.List;
 @Getter
 public class ApplicationProperties {
 
+    private final MyHealth myHealth = new MyHealth();
+
     private final CorsConfiguration cors = new CorsConfiguration();
 
     private final Security security = new Security();
+
+    @Getter
+    @Setter
+    public static class MyHealth {
+        private String apiBaseUrl;
+    }
 
     @Getter
     public static class Security {

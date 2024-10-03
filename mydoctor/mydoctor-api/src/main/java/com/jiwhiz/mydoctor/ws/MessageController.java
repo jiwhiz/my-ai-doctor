@@ -51,6 +51,7 @@ public class MessageController {
                         .param("input", message.content())
                         .param("documents", String.join("\n", contentList))
                 )
+                .functions("healthRecordFunction")
                 .call()
                 .content();
         log.info("Message response: {}", response);

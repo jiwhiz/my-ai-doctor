@@ -25,6 +25,39 @@ spring:
         jwt:
           issuer-uri: http://auth.mydoctor/realms/mydoctor-demo
           jwk-set-uri: http://auth.mydoctor/realms/mydoctor-demo/protocol/openid-connect/certs
+      client:
+        registration:
+          myhealth-auth-client:
+            client-id: mydoctor-api-server
+            authorization-grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+            provider: myhealth-auth-provider
+          mydoctor-auth-client:
+            client-id: mydoctor-api
+            client-secret: nvYxjQFYGdNI8zj5Nb3Jz25ezWgN1cE8
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: urn:ietf:params:oauth:grant-type:token-exchange
+            provider: mydoctor-auth-provider
+        provider:
+          myhealth-auth-provider:
+            token-uri: http://auth.myhealth/realms/myhealth-demo/protocol/openid-connect/token
+          mydoctor-auth-provider:
+            token-uri: http://auth.mydoctor/realms/mydoctor-demo/protocol/openid-connect/token
+  ai:
+    ollama:
+      base-url: http://ollama:11434/
+      chat:
+        enabled: true
+        options:
+          model: 'llama3.2'
+      embedding:
+        enabled: true
+        options:
+          model: 'nomic-embed-text'
+    vectorstore:
+      weaviate:
+        host: weaviate:8080
+        api-key: ""
+        scheme: http
 
 server:
   port: 80
@@ -40,13 +73,13 @@ springdoc:
 
 
 app:
+  my-health:
+    api-base-url: 'http://api.myhealth/api/v1'
   security:
     oauth2:
       audience:
         - mydoctor-ui
-
   cors:
-    # Allow local web server
     allowed-origins:
       - 'http://ui.mydoctor'
     # Enable CORS when running in GitHub Codespaces

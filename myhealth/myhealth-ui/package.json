@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "HOST=ui.myhealth PORT=1233 AUTH_SERVER_URL=http://auth.myhealth:8090 API_BASE_URL=http://api.myhealth:8082 elm-land server",
+    "start": "HOST=ui.myhealth PORT=1233 AUTH_SERVER_URL=http://auth.myhealth:8090 API_BASE_URL=http://api.myhealth/api/v1:8082 elm-land server",
     "build": "elm-land generate && elm-land build"
   },
   "devDependencies": {

@@ -83,7 +83,7 @@ update msg model =
                             Http.request
                                 { method = "GET"
                                 , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
-                                , url = model.apiBaseUrl ++ "/api/records"
+                                , url = model.apiBaseUrl ++ "/records"
                                 , body = Http.emptyBody
                                 , expect = Http.expectString ReceiveApiResponse
                                 , timeout = Nothing
