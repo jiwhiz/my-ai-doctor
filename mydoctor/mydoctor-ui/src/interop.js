@@ -1,35 +1,15 @@
 import Keycloak from 'keycloak-js';
 import { Client } from '@stomp/stompjs';
 
-var keycloak = new Keycloak({
-    url: 'http://auth.mydoctor:8080',
-    realm: 'mydoctor-demo',
-    clientId: 'mydoctor-ui',
-});
-
-var stompClient = new Client({
-    brokerURL: 'ws://api.mydoctor:8081/ws',
-
-    debug: function (str) {
-        console.log('Stomp:' + str);
-    },
-
-    reconnectDelay: 5000,
-    heartbeatIncoming: 4000,
-    heartbeatOutgoing: 4000,
-    onStompError: function (frame) {
-        console.log('Broker reported error: ' + frame.headers['message']);
-        console.log('Additional details: ' + frame.body);
-    }
-})
-
-
 
 // This is called BEFORE your Elm app starts up
 // 
 // The value returned here will be passed as flags 
 // into your `Shared.init` function.
 export const flags = ({ env }) => {
+    return {
+        apiBaseUrl : env.API_BASE_URL
+    }
 }
 
 // This is called AFTER your Elm app starts up
@@ -39,6 +19,29 @@ export const flags = ({ env }) => {
 // messages from Elm
 export const onReady = ({ app, env }) => {
     console.log("onReady");
+    console.log(env);
+
+    var keycloak = new Keycloak({
+        url: env.AUTH_SERVER_URL,
+        realm: 'mydoctor-demo',
+        clientId: 'mydoctor-ui',
+    });
+    
+    var stompClient = new Client({
+        brokerURL: env.WS_BASE_URL,
+    
+        debug: function (str) {
+            console.log('Stomp:' + str);
+        },
+    
+        reconnectDelay: 5000,
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000,
+        onStompError: function (frame) {
+            console.log('Broker reported error: ' + frame.headers['message']);
+            console.log('Additional details: ' + frame.body);
+        }
+    })
 
     // Initialize Keycloak
     keycloak
