@@ -13,7 +13,7 @@ spring:
     version: 0.0.1-SNAPSHOT
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://db.postgresql:5432/mydoctordemo
+    url: jdbc:postgresql://db.postgresql:5432/myhealthdemo
     username: walle
     password: walle
     hikari:
@@ -23,8 +23,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://auth.mydoctor/realms/mydoctor-demo
-          jwk-set-uri: http://auth.mydoctor/realms/mydoctor-demo/protocol/openid-connect/certs
+          issuer-uri: http://auth.myhealth/realms/myhealth-demo
+          jwk-set-uri: http://auth.myhealth/realms/myhealth-demo/protocol/openid-connect/certs
 
 server:
   port: 80
@@ -43,12 +43,12 @@ app:
   security:
     oauth2:
       audience:
-        - mydoctor-ui
+        - myhealth-ui
 
   cors:
     # Allow local web server
     allowed-origins:
-      - 'http://ui.mydoctor'
+      - 'http://ui.myhealth'
     # Enable CORS when running in GitHub Codespaces
     allowed-origin-patterns: 'https://*.githubpreview.dev'
     allowed-methods: '*'

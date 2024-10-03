@@ -16,9 +16,9 @@ import Markdown.Render
 
 
 page : Shared.Model -> Route () -> Page Model Msg
-page _ _ =
+page m _ =
     Page.new
-        { init = init
+        { init = init m
         , subscriptions = subscriptions
         , update = update
         , view = view
@@ -27,16 +27,18 @@ page _ _ =
 type alias Model =
     { isLoggedIn : Bool
     , accessToken : Maybe String
+    , apiBaseUrl : String
     , apiResponse : Maybe String
     , messages : List String
     , newMessage : String
     }
 
 
-init : () -> ( Model, Effect Msg )
-init _ =
+init : Shared.Model -> () -> ( Model, Effect Msg )
+init m _ =
     ( { isLoggedIn = False
       , accessToken = Nothing
+      , apiBaseUrl = m.apiBaseUrl
       , apiResponse = Nothing
       , messages = []
       , newMessage = ""
@@ -81,7 +83,7 @@ update msg model =
                             Http.request
                                 { method = "GET"
                                 , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
-                                , url = "http://api.mydoctor:8081/api/records"
+                                , url = model.apiBaseUrl ++ "/api/records"
                                 , body = Http.emptyBody
                                 , expect = Http.expectString ReceiveApiResponse
                                 , timeout = Nothing
@@ -163,13 +165,18 @@ view model =
           else
             button [ onClick Login ] [ text "Login" ]
         , br [] []
-        , button [ onClick CallApi ] [ text "Call backend API" ]
-        , case model.apiResponse of
-            Just response ->
-                div [] [ text ("API Response: " ++ response) ]
+        , if model.isLoggedIn then
+            div []
+                [ button [ onClick CallApi ] [ text "Call backend API" ]
+                , case model.apiResponse of
+                    Just response ->
+                        div [] [ text ("API Response: " ++ response) ]
 
-            Nothing ->
-                text ""
+                    Nothing ->
+                        text ""
+                ]
+          else
+            div [] []
 
         , if model.isLoggedIn then 
             div [class "chat-container"]

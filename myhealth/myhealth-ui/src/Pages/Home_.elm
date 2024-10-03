@@ -127,7 +127,7 @@ subscriptions _ =
 
 view : Model -> View Msg
 view model =
-    { title = "My Doctor"
+    { title = "My Health"
     , body =
         [ if model.isLoggedIn then
             button [ onClick Logout ] [ text "Logout" ]
@@ -135,13 +135,18 @@ view model =
           else
             button [ onClick Login ] [ text "Login" ]
         , br [] []
-        , button [ onClick CallApi ] [ text "Call backend API" ]
-        , case model.apiResponse of
-            Just response ->
-                div [] [ text ("API Response: " ++ response) ]
-
-            Nothing ->
-                text ""
+        , if model.isLoggedIn then
+            div [] 
+                [ button [ onClick CallApi ] [ text "Call backend API" ]
+                , case model.apiResponse of
+                    Just response ->
+                        div [] [ text ("API Response: " ++ response) ]
+                          
+                    Nothing ->
+                        text ""
+                ]
+          else
+            div [] []
 
         ]
     }
