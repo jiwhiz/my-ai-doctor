@@ -7,7 +7,9 @@ COPY src ./src
 COPY static ./static
 COPY elm.json ./
 COPY elm-land.json ./
-COPY .env ./
+
+ENV AUTH_SERVER_URL="http://auth.myhealth"
+ENV API_BASE_URL="http://api.myhealth/api/v1"
 
 RUN npm install
 RUN npm run build

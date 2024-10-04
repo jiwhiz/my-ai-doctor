@@ -7,7 +7,10 @@ COPY src ./src
 COPY static ./static
 COPY elm.json ./
 COPY elm-land.json ./
-COPY .env ./
+
+ENV AUTH_SERVER_URL="http://auth.mydoctor"
+ENV API_BASE_URL="http://api.mydoctor/api/v1"
+ENV WS_BASE_URL="ws://api.mydoctor/ws"
 
 RUN npm install
 RUN npm run build
