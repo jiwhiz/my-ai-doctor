@@ -28,11 +28,17 @@ docker compose -f local-dev.yml up -d
 Then start ui and api servers individually.
 
 ## Run demo
+If first time, build with docker for each app, and download ollama models:
 ```
 ./dbuild.sh
 docker compose up -d
 docker exec -it ollama ollama pull nomic-embed-text
 docker exec -it ollama ollama pull llama3.2
+```
+
+Later can only run
+```
+docker compose up -d
 ```
 
 Then open http://ui.mydoctor to chat with AI Doctor!
