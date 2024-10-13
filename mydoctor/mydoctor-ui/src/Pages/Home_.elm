@@ -1,18 +1,16 @@
 module Pages.Home_ exposing (Model, Msg, page)
 
 import Effect exposing (Effect, onLoginSuccess, messageReceiver)
-import Html exposing (br, button, div, text, p, input)
+import Html exposing (br, button, div, text, p, input, img, span)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Http
-import Markdown.Option exposing (..)
-import Markdown.Render exposing (MarkdownMsg(..), MarkdownOutput(..))
 import Page exposing (Page)
 import Platform.Sub exposing (batch)
 import Route exposing (Route)
 import Shared
 import View exposing (View)
-import Markdown.Render
+import Markdown
 
 
 page : Shared.Model -> Route () -> Page Model Msg
@@ -24,12 +22,17 @@ page m _ =
         , view = view
         }
 
+type ChatMessage
+    = UserMsg String
+    | DocMsg String
+
+
 type alias Model =
     { isLoggedIn : Bool
     , accessToken : Maybe String
     , apiBaseUrl : String
     , apiResponse : Maybe String
-    , messages : List String
+    , messages : List ChatMessage
     , newMessage : String
     }
 
@@ -58,7 +61,6 @@ type Msg
     | UserInputChange String
     | SendMessage
     | ReceiveWSMessage String
-    | MarkdownMsg Markdown.Render.MarkdownMsg
 
 
 update : Msg -> Model -> ( Model, Effect Msg )
@@ -104,7 +106,7 @@ update msg model =
                     ( { model | apiResponse = Just ("Error: " ++ httpErrorToString error) }, Effect.none )
 
         ReceiveWSMessage message ->
-            ( { model | messages = model.messages ++ [message] }
+            ( { model | messages = model.messages ++ [ DocMsg message] }
             , Effect.none
             )
 
@@ -114,12 +116,10 @@ update msg model =
             )
 
         SendMessage ->
-            ( { model | messages = model.messages ++ [model.newMessage], newMessage = "" }
+            ( { model | messages = model.messages ++ [UserMsg model.newMessage], newMessage = "" }
             , Effect.sendMessageToBackend model.newMessage
             )
 
-        MarkdownMsg _ ->
-            ( model, Effect.none )
 
 httpErrorToString : Http.Error -> String
 httpErrorToString error =
@@ -179,23 +179,61 @@ view model =
             div [] []
 
         , if model.isLoggedIn then 
-            div [class "chat-container"]
-                [ div [ class "chat-box"]
-                    [ div [ class "card" ]
-                        [ div [ class "card-header" ] [ text "Messages" ]
-                        , div [ class "card-body" ] 
-                            [ div [ class "messages"]
-                                [ div [] (List.map (\m -> p [] [ Markdown.Render.toHtml Standard m |> Html.map MarkdownMsg ]) model.messages)] 
-                            , br [] []
-                            ]
-                        , div [ class "card-footer" ]
-                            [ input [ placeholder "Your message", value model.newMessage, onInput UserInputChange ] []
-                            , button [ onClick SendMessage ] [ text "Send" ]
-                            ]
-                        ]
-                    ]
-                ]
+            chatList model
           else
             div [] []
         ]
     }
+
+chatList : Model -> Html.Html Msg
+chatList model =
+    div [ class "container mx-auto p-4" ]
+        [ div [ class "flex flex-col h-screen bg-white rounded shadow-lg" ]
+            [ -- Chat Header
+              div [ class "py-4 px-6 bg-blue-500 text-white font-bold text-xl rounded-t" ]
+                [ text "Chat with My AI Doctor" ]
+              
+              -- Message Area
+            , div [ class "flex-1 overflow-y-auto p-4 space-y-4" ]
+                (List.map
+                    (\m -> 
+                        case m of 
+                            UserMsg t -> userMessage t
+                            DocMsg t -> aiMessage t
+                    )
+                    model.messages
+                )
+
+              -- Input Area
+            , div [ class "py-4 px-6 bg-gray-100 rounded-b" ]
+                [ div [ class "flex items-center space-x-4" ]
+                    [ input [ placeholder "Type a message...", class "w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500", value model.newMessage, onInput UserInputChange ] []
+                    , button [ class "bg-blue-500 text-white px-4 py-2 rounded-lg", onClick SendMessage ] [ text "Send" ]
+                    ]
+                ]
+            ]
+        ]
+
+aiMessage : String -> Html.Html Msg
+aiMessage msgTxt = 
+    div [ class "flex items-start" ]
+        [ div [ class "flex-shrink-0" ]
+            [ img [ src "/doctor-avatar.svg", alt "avatar", class "rounded-full w-10 h-10" ] [] ]
+        , div [ class "ml-3" ]
+            [ div [ class "bg-gray-100 p-3 rounded-lg" ]
+                [ Markdown.toHtml [ class "text-sm text-gray-900" ] msgTxt ]
+            , span [ class "text-xs text-gray-500" ] [ text "12:45 PM" ]
+            ]
+        ]
+
+userMessage : String -> Html.Html Msg 
+userMessage msgTxt =
+    div [ class "flex justify-end items-start" ]
+        [ div [ class "mr-3 text-right" ]
+            [ div [ class "bg-blue-500 text-white p-3 rounded-lg" ]
+                [ p [ class "text-sm text-gray-900" ] [ text msgTxt ] ]
+            , span [ class "text-xs text-gray-500" ] [ text "12:46 PM" ]
+            ]
+        , div [ class "flex-shrink-0" ]
+            [ img [ src "/user-avatar.svg", alt "avatar", class "rounded-full w-10 h-10" ] [] ]
+        ]

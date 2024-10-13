@@ -1,3 +1,4 @@
+import "./styles.css";
 import Keycloak from 'keycloak-js';
 import { Client } from '@stomp/stompjs';
 
