@@ -12,7 +12,8 @@ module Shared exposing
 
 -}
 
-import Effect exposing (Effect)
+import Dict
+import Effect exposing (Effect, onLoginSuccess)
 import Json.Decode
 import Route exposing (Route)
 import Route.Path
@@ -44,7 +45,8 @@ type alias Model =
 
 init : Result Json.Decode.Error Flags -> Route () -> ( Model, Effect Msg )
 init flagsResult route =
-    ( { apiBaseUrl = 
+    ( { user = Nothing
+      , apiBaseUrl = 
             case flagsResult of
                 Ok flags -> flags.apiBaseUrl
 
@@ -64,9 +66,18 @@ type alias Msg =
 update : Route () -> Msg -> Model -> ( Model, Effect Msg )
 update route msg model =
     case msg of
-        Shared.Msg.NoOp ->
-            ( model
-            , Effect.none
+        Shared.Msg.LoginSuccess token ->
+            ( { model | user = Just { accessToken = token } }
+            , Effect.pushRoute
+                { path = Route.Path.Chat
+                , query = Dict.empty
+                , hash = Nothing
+                }
+            )
+
+        Shared.Msg.Logout ->
+            ( { model | user = Nothing }
+            , Effect.logoutFromKeycloak
             )
 
 
@@ -76,4 +87,4 @@ update route msg model =
 
 subscriptions : Route () -> Model -> Sub Msg
 subscriptions route model =
-    Sub.none
+    onLoginSuccess Shared.Msg.LoginSuccess
