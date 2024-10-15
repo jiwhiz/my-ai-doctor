@@ -84,29 +84,29 @@ export const onReady = ({ app, env }) => {
         app.ports.login.subscribe( () => {
             console.log("Call login()");
             keycloak
-            .login()
-            .then(function () {
-                console.log("After login: " + keycloak.authenticated);
-                if (keycloak.authenticated) {
-                    app.ports.onLoginSuccess.send(keycloak.token);
-                }
-            })
-            .catch(function () {
-                console.error('Failed to login Keycloak');
-            });
+                .login()
+                .then(function () {
+                    console.log("After login: " + keycloak.authenticated);
+                    if (keycloak.authenticated) {
+                        app.ports.onLoginSuccess.send(keycloak.token);
+                    }
+                })
+                .catch(function () {
+                    console.error('Failed to login Keycloak');
+                });
         })
     
         app.ports.logout.subscribe( () => {
             console.log("Call logout()");
             keycloak
-            .logout()
-            .then(function () {
-                console.log("After logout: " + keycloak.authenticated);
-            })
-            .catch(function (err) {
-                console.error('Failed to logout Keycloak');
-                console.error(err);
-            });
+                .logout()
+                .then(function () {
+                    console.log("After logout: " + keycloak.authenticated);
+                })
+                .catch(function (err) {
+                    console.error('Failed to logout Keycloak');
+                    console.error(err);
+                });
         })
     }
 

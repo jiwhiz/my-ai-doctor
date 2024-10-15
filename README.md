@@ -7,7 +7,7 @@ it will mess up browser cookies. So we use custom domain for each server,
 and add following to your `/etc/hosts` file:
 
 ```
-127.0.0.1 uui.mydoctor
+127.0.0.1 ui.mydoctor
 127.0.0.1 api.mydoctor
 127.0.0.1 auth.mydoctor
 127.0.0.1 ui.myhealth

@@ -1,13 +1,12 @@
 module Pages.Home_ exposing (Model, Msg, page)
 
 
-import Effect exposing (Effect, onLoginSuccess, messageReceiver)
+import Effect exposing (Effect)
 import Html exposing (h1, button, div, text, p, header, section, footer, span)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick)
 
 import Page exposing (Page)
-import Platform.Sub exposing (batch)
 import Route exposing (Route)
 import Shared
 import View exposing (View)
@@ -21,10 +20,6 @@ page m _ =
         , update = update
         , view = view
         }
-
-type ChatMessage
-    = UserMsg String
-    | DocMsg String
 
 
 type alias Model =
